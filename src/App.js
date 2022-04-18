@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Quagga from 'quagga';
+import React, { useEffect, useRef, useState } from "react";
+import Quagga from "quagga";
 
 const App = (props) => {
-
   const firstUpdate = useRef(true);
+  const [isAllow, setIsAllow] = useState(true);
   const [isStart, setIsStart] = useState(false);
-  const [barcode, setBarcode] = useState('');
+  const [barcode, setBarcode] = useState("");
 
   useEffect(() => {
     return () => {
@@ -23,7 +23,7 @@ const App = (props) => {
     else stopScanner();
   }, [isStart]);
 
-  const _onDetected = res => {
+  const _onDetected = (res) => {
     // stopScanner();
     setBarcode(res.codeResult.code);
   };
@@ -32,11 +32,11 @@ const App = (props) => {
     Quagga.init(
       {
         inputStream: {
-          type: 'LiveStream',
-          target: document.querySelector('#scanner-container'),
+          type: "LiveStream",
+          target: document.querySelector("#scanner-container"),
           constraints: {
-            facingMode: 'environment' // or user
-          }
+            facingMode: "environment", // or user
+          },
         },
         numOfWorkers: navigator.hardwareConcurrency,
         locate: true,
@@ -45,12 +45,12 @@ const App = (props) => {
           drawBoundingBox: true,
           showFrequency: true,
           drawScanline: true,
-          showPattern: true
+          showPattern: true,
         },
         multiple: false,
         locator: {
           halfSample: false,
-          patchSize: 'large', // x-small, small, medium, large, x-large
+          patchSize: "large", // x-small, small, medium, large, x-large
           debug: {
             showCanvas: false,
             showPatches: false,
@@ -62,28 +62,28 @@ const App = (props) => {
             boxFromPatches: {
               showTransformed: false,
               showTransformedBox: false,
-              showBB: false
-            }
-          }
+              showBB: false,
+            },
+          },
         },
         decoder: {
           readers: [
-            'code_128_reader',
-            'ean_reader',
-            'ean_8_reader',
-            'code_39_reader',
-            'code_39_vin_reader',
-            'codabar_reader',
-            'upc_reader',
-            'upc_e_reader',
-            'i2of5_reader',
-            'i2of5_reader',
-            '2of5_reader',
-            'code_93_reader'
-          ]
-        }
+            "code_128_reader",
+            "ean_reader",
+            "ean_8_reader",
+            "code_39_reader",
+            "code_39_vin_reader",
+            "codabar_reader",
+            "upc_reader",
+            "upc_e_reader",
+            "i2of5_reader",
+            "i2of5_reader",
+            "2of5_reader",
+            "code_93_reader",
+          ],
+        },
       },
-      err => {
+      (err) => {
         if (err) {
           return console.log(err);
         }
@@ -91,7 +91,7 @@ const App = (props) => {
       }
     );
     Quagga.onDetected(_onDetected);
-    Quagga.onProcessed(result => {
+    Quagga.onProcessed((result) => {
       let drawingCtx = Quagga.canvas.ctx.overlay,
         drawingCanvas = Quagga.canvas.dom.overlay;
 
@@ -100,23 +100,33 @@ const App = (props) => {
           drawingCtx.clearRect(
             0,
             0,
-            parseInt(drawingCanvas.getAttribute('width')),
-            parseInt(drawingCanvas.getAttribute('height'))
+            parseInt(drawingCanvas.getAttribute("width")),
+            parseInt(drawingCanvas.getAttribute("height"))
           );
-          result.boxes.filter(box => box !== result.box).forEach(box => {
-            Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
-              color: 'green',
-              lineWidth: 2
+          result.boxes
+            .filter((box) => box !== result.box)
+            .forEach((box) => {
+              Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
+                color: "green",
+                lineWidth: 2,
+              });
             });
-          });
         }
 
         if (result.box) {
-          Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: '#00F', lineWidth: 2 });
+          Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, {
+            color: "#00F",
+            lineWidth: 2,
+          });
         }
 
         if (result.codeResult && result.codeResult.code) {
-          Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 3 });
+          Quagga.ImageDebug.drawPath(
+            result.line,
+            { x: "x", y: "y" },
+            drawingCtx,
+            { color: "red", lineWidth: 3 }
+          );
         }
       }
     });
@@ -128,14 +138,38 @@ const App = (props) => {
     Quagga.stop();
   };
 
-  return <div>
-    <h3>Barcode scanner in React - <a href="https://www.cluemediator.com/" target="_blank">Clue Mediator</a></h3>
-    <button onClick={() => setIsStart(prevStart => !prevStart)} style={{ marginBottom: 20 }}>{isStart ? 'Stop' : 'Start'}</button>
-    {isStart && <React.Fragment>
-      <div id="scanner-container" />
-      <span>Barcode: {barcode}</span>
-    </React.Fragment>}
-  </div>
-}
+  return (
+    <div>
+      <h1>Test Barcode scanner</h1>
+      <br />
+      <h3>Allow Permission</h3>
+      <button
+        onClick={() => setIsAllow((prevStart) => !prevStart)}
+        style={{ marginBottom: 20 }}
+      >
+        {isAllow ? "Allow" : "Denied"}
+      </button>
+      <br />
+      <br />
+      <br />
+      <button
+        onClick={() => setIsStart((prevStart) => !prevStart)}
+        style={{ marginBottom: 20 }}
+        disabled={isAllow}
+      >
+        {isStart ? "Stop Scan" : "Start Scan"}
+      </button>
+      {isStart && (
+        <React.Fragment>
+          <div id="scanner-container" />
+          <br />
+          <br />
+          <br />
+          <span className="scanner-area">Barcode: {barcode}</span>
+        </React.Fragment>
+      )}
+    </div>
+  );
+};
 
 export default App;

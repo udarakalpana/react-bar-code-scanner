@@ -16,6 +16,19 @@ code {
   position: relative;
 }
 
+.drawingBuffer{
+  border: 5px solid gray;
+}
+
+.scanner-area{
+  border: 1px solid #000;
+  width: 50%;
+  background-color: #000;
+  color: #fff;
+  padding: 5px;
+  margin-top: 10px;
+}
+
 .drawingBuffer {
   position: absolute;
   left: 0;
